@@ -1,0 +1,16 @@
+{
+  "name": "@betty-mini-games/test-liveops-wrapper",
+  "private": true,
+  "description": "npm workspaces root for the performance tests: links test-liveops-sdk and test-liveops-mini-games, cloned into this folder.",
+  "workspaces": [
+    "test-liveops-*"
+  ],
+  "scripts": {
+    "setup": "npm install && npm run build -w @betty-mini-games/test-liveops-sdk",
+    "frame": "npm run build -w @betty-mini-games/test-liveops-sdk && concurrently -k -n sdk,frame -c magenta,green \"npm run dev -w @betty-mini-games/test-liveops-sdk -- --preserveWatchOutput\" \"npm run dev:frame -w @betty-mini-games/test-liveops-mini-games\"",
+    "frame:prod": "npm run build -w @betty-mini-games/test-liveops-sdk && npm run build:frame -w @betty-mini-games/test-liveops-mini-games && npm run preview:frame -w @betty-mini-games/test-liveops-mini-games"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.7"
+  }
+}
