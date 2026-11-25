@@ -21,3 +21,5 @@ Step-by-step guides:
 
 - [Run on web](RUN-ON-WEB.md): FrontendV2's web app, the games in an iframe.
 - [Run on a mobile phone](RUN-ON-MOBILE.md): FrontendV2's iOS and Android app, the games in a WebView.
+- [Measure the iframe's cost (web)](MEASURE-WEB.md): what to open, which tools, what matters; with the probe `perf/frame-perf.js`.
+- [Deploy the mobile app](DEPLOY-MOBILE.md): "Betty Perf", a separate app next to Betty QA, for the test phones.
