@@ -17,9 +17,9 @@ Then in FrontendV2: `npm run web:pixi`. On its own: `http://localhost:8888/frame
 
 `npm run frame:prod` serves the built frame on port 8890 (use it for measurements).
 
-Step-by-step guides:
+Deploy the frame: `npm run frame:deploy` (first time: `npx wrangler login`), then
+`https://test-liveops-frame.pages.dev/frame/`.
 
-- [Run on web](RUN-ON-WEB.md): FrontendV2's web app, the games in an iframe.
-- [Run on a mobile phone](RUN-ON-MOBILE.md): FrontendV2's iOS and Android app, the games in a WebView.
-- [Measure the iframe's cost (web)](MEASURE-WEB.md): what to open, which tools, what matters; with the probe `perf/frame-perf.js`.
-- [Deploy the mobile app](DEPLOY-MOBILE.md): "Betty Perf", a separate app next to Betty QA, for the test phones.
+The performance-test guides (deploying FrontendV2 and the Betty Perf app, running locally,
+measuring on web and mobile) live in FrontendV2, branch `feat/frames`, folder `perf-test/`.
+`perf/frame-perf.js` here is the same probe as `perf-test/frame-perf.js` there: keep them identical.

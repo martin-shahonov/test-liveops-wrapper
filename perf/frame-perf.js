@@ -1,7 +1,9 @@
 // Daily games frame: performance probe. Paste into the DevTools console of the FRAME's page:
-// - the page opened on its own (http://…/frame/): the top context;
-// - the frame inside FrontendV2: pick its context first (console's context dropdown, the
-//   test-liveops-frame / 127.0.0.1:8890 entry).
+// - the page opened on its own (…/frame/, in a browser tab): the top context;
+// - the frame inside FrontendV2 web: pick its context first (console's context dropdown,
+//   the test-liveops-frame entry);
+// - the frame inside FrontendV2's app: Safari's Web Inspector (iOS) or chrome://inspect
+//   (Android) on the WebView's page, then paste in its console.
 // Every game open is measured, from the open message to the game closing, and logged as JSON
 // when the game closes (see MEASURE-WEB.md for what each field means).
 // __perf.open('daily-wheel' | 'daily-scratcher', tier?)  opens a game in this page (top level only)
@@ -11,7 +13,8 @@
 // __perf.reset()     forgets the runs
 ;(() => {
     if (window.__perf) return console.warn('[perf] already installed')
-    const setup = window.parent === window ? 'top-level' : 'iframe'
+    // webview: in FrontendV2's app; iframe: in FrontendV2 web; top-level: the page on its own (the baseline).
+    const setup = window.ReactNativeWebView ? 'webview' : window.parent === window ? 'top-level' : 'iframe'
     const runs = []
     let cur = null
 
@@ -138,7 +141,7 @@
     window.__perf = {
         runs,
         open(game = 'daily-wheel', tier) {
-            if (setup !== 'top-level') return console.warn('[perf] in the iframe, open the game from FrontendV2')
+            if (setup !== 'top-level') return console.warn(`[perf] in the ${setup}, open the game from FrontendV2's lobby`)
             window.postMessage(JSON.stringify({ game, tier }), '*')
         },
         /** Ends the measurement running now, before the game closes. */
