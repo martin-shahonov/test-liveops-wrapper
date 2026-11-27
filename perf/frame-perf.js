@@ -4,13 +4,15 @@
 //   the test-liveops-frame entry);
 // - the frame inside FrontendV2's app: Safari's Web Inspector (iOS) or chrome://inspect
 //   (Android) on the WebView's page, then paste in its console.
-// Every game open is measured, from the open message to the game closing, and logged as JSON
-// when the game closes (see MEASURE-WEB.md for what each field means).
-// __perf.open('daily-wheel' | 'daily-scratcher', tier?)  opens a game in this page (top level only)
+// Every game open is measured, from the ladder's Play (the moment the frame is told to show the
+// game; whatever of it is not loaded yet loads from there) to the game closing, and logged as JSON when the game closes (see
+// MEASURE-WEB.md for what each field means). The measuring ladder (MEASURE-LADDER.md): __perf.marks().
+// __perf.open('daily-wheel' | 'daily-scratcher', tier?)  plays a game in this page (top level only): every step at once
 // __perf.runs        every measured open        __perf.summary()   medians by setup and game (JSON)
 // __perf.json()      every run as one JSON string, to copy out (copy(__perf.json()) in Chrome)
 // __perf.stop()      ends the measurement now (it otherwise ends when the game closes)
 // __perf.reset()     forgets the runs
+// __perf.marks()     the frame's ladder steps so far (code-ready, engine-ready, art-ready, ...), in ms since the page loaded
 ;(() => {
     if (window.__perf) return console.warn('[perf] already installed')
     // webview: in FrontendV2's app; iframe: in FrontendV2 web; top-level: the page on its own (the baseline).
@@ -119,18 +121,8 @@
         console.log(`[perf] ■ run ${result.run} done\n${JSON.stringify(result, null, 2)}`)
     }
 
-    // An open: the frame's own message (the host's, or __perf.open's). event.timeStamp is when it arrived.
-    window.addEventListener('message', (event) => {
-        let message = event.data
-        if (typeof message === 'string') {
-            try {
-                message = JSON.parse(message)
-            } catch {
-                return
-            }
-        }
-        if (message && typeof message.game === 'string') begin(message.game, event.timeStamp)
-    })
+    // An open: the frame is told to play a game (the ladder's Play). event.timeStamp is when.
+    window.addEventListener('daily-games:open', (event) => begin(event.detail.game, event.timeStamp))
     // A close: the game's container leaves the page.
     new MutationObserver((records) => {
         for (const record of records) {
@@ -151,6 +143,14 @@
         },
         reset() {
             runs.length = 0
+        },
+        marks() {
+            const rows = performance
+                .getEntriesByType('mark')
+                .filter((m) => m.name.startsWith('stage:'))
+                .map((m) => ({ step: m.name.slice(6), atMs: round(m.startTime) }))
+            console.table(rows)
+            return rows
         },
         json() {
             return JSON.stringify(runs, null, 2)
@@ -182,5 +182,5 @@
             return rows
         },
     }
-    console.info(`[perf] ready (${setup}). Each game open is measured from the open until the game closes.`)
+    console.info(`[perf] ready (${setup}). Each game open is measured from the ladder's Play until the game closes.`)
 })()

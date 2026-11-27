@@ -15,6 +15,10 @@ npm run frame    # http://localhost:8888/frame/
 
 Then in FrontendV2: `npm run web:pixi`. On its own: `http://localhost:8888/frame/?game=daily-wheel&tier=Diamond`.
 
+The measuring ladder: the host climbs the frame one step at a time (`{"cmd":"code"}`, `engine`, `art`,
+`play`: see `frame/main.ts`). Opened on its own, the frame shows the steps as buttons
+(`?game=daily-scratcher` for the scratcher). FrontendV2's guide: `perf-test/MEASURE-LADDER.md`.
+
 `npm run frame:prod` serves the built frame on port 8890 (use it for measurements).
 
 Deploy the frame: `npm run frame:deploy` (first time: `npx wrangler login`), then
